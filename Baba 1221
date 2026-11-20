@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AB • 12.21. – Neked</title>
+    <!-- Tailwind CSS betöltése -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Elegáns serif és modern sans-serif betűtípusok -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --gold-light: #fde68a;
+            --gold-mid: #d4af37;
+            --gold-dark: #996515;
+            --bg-deep: #0b0705;
+        }
+
+        body {
+            background-color: var(--bg-deep);
+            color: #f8fafc;
+            font-family: 'Montserrat', sans-serif;
+            overflow-x: hidden;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .font-cinzel {
+            font-family: 'Cinzel', serif;
+        }
+
+        .font-cormorant {
+            font-family: 'Cormorant Garamond', serif;
+        }
+
+        /* Arany szövegátmenet */
+        .text-gold-gradient {
+            background: linear-gradient(135deg, #fff3c4 0%, #e5b869 35%, #b88628 70%, #f5d38c 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Arany keret és ragyogás */
+        .gold-border-glow {
+            border: 1px solid rgba(212, 175, 55, 0.35);
+            box-shadow: 0 0 25px rgba(212, 175, 55, 0.12), inset 0 0 15px rgba(212, 175, 55, 0.05);
+        }
+
+        .gold-border-glow:hover, .gold-card-active {
+            border-color: rgba(245, 211, 140, 0.75);
+            box-shadow: 0 10px 35px -5px rgba(212, 175, 55, 0.25), inset 0 0 20px rgba(212, 175, 55, 0.1);
+        }
+
+        /* Megnyitó lap kép keretezése és finom lélegző zoom animációja */
+        @keyframes slowBreathe {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.035); }
+        }
+
+        .hero-image-animate {
+            animation: slowBreathe 14s ease-in-out infinite;
+        }
+
+        /* Arany gomb csillogás (Shimmer) */
+        @keyframes shimmerSweep {
+            0% { transform: translateX(-120%) skewX(-20deg); }
+            60%, 100% { transform: translateX(220%) skewX(-20deg); }
+        }
+
+        .btn-gold-shimmer {
+            background: linear-gradient(135deg, #c5963e 0%, #f3d085 50%, #b38025 100%);
+            color: #140c05;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 25px rgba(229, 184, 105, 0.45);
+            transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.3s ease;
+        }
+
+        .btn-gold-shimmer:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 0 38px rgba(243, 208, 133, 0.7);
+        }
+
+        .btn-gold-shimmer:active {
+            transform: scale(0.98);
+        }
+
+        .btn-gold-shimmer::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 45%;
+            height: 100%;
+            background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.65) 50%, rgba(255,255,255,0) 100%);
+            animation: shimmerSweep 3.5s infinite;
+        }
+
+        /* Lebegő nyíl / hívójel */
+        @keyframes floatPulse {
+            0%, 100% { transform: translateY(0); opacity: 0.75; }
+            50% { transform: translateY(-6px); opacity: 1; }
+        }
+
+        .float-cue {
+            animation: floatPulse 2.4s ease-in-out infinite;
+        }
+
+        /* Oldalváltó arany fényfüggöny átmenet */
+        #transition-overlay {
+            pointer-events: none;
+            background: radial-gradient(circle at center, rgba(253, 230, 138, 0.95) 0%, rgba(212, 175, 55, 0.85) 35%, rgba(18, 10, 6, 0.98) 85%);
+            opacity: 0;
+            transform: scale(0.85);
+            transition: opacity 0.65s cubic-bezier(0.4, 0, 0.2, 1), transform 0.75s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        #transition-overlay.active {
+            opacity: 1;
+            transform: scale(1.15);
+            pointer-events: all;
+        }
+
+        /* Kártyák egymás utáni becsúszása (Staggered Entrance) */
+        .list-card {
+            opacity: 0;
+            transform: translateY(28px) scale(0.97);
+            transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+                        transform 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+                        border-color 0.3s ease,
+                        box-shadow 0.3s ease,
+                        background-color 0.3s ease;
+        }
+
+        .list-card.revealed {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
+        /* Harmonika (Accordion) tartalom nyitása */
+        .card-details {
+            display: grid;
+            grid-template-rows: 0fr;
+            transition: grid-template-rows 0.45s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.35s ease;
+            opacity: 0;
+        }
+
+        .list-card.expanded .card-details {
+            grid-template-rows: 1fr;
+            opacity: 1;
+        }
+
+        .card-details-inner {
+            overflow: hidden;
+        }
+
+        /* Egyedi görgetősáv */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0b0705;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #5c4318;
+            border-radius: 9999px;
+        }
+    </style>
+</head>
+<body class="min-h-screen relative selection:bg-amber-500/30 selection:text-amber-200">
+
+    <!-- Háttér részecske és rózsaszirom vászon (Canvas animáció) -->
+    <canvas id="ambient-canvas" class="fixed inset-0 w-full h-full pointer-events-none z-30"></canvas>
+
+    <!-- Átmeneti arany fényfüggöny réteg -->
+    <div id="transition-overlay" class="fixed inset-0 z-50 flex items-center justify-center">
+        <div class="text-center px-6 transform transition-transform duration-500">
+            <div class="font-cinzel text-3xl sm:text-5xl tracking-[0.25em] text-[#1a1006] font-bold drop-shadow">
+                AB • 12.21.
+            </div>
+            <div class="w-24 h-[1px] bg-[#1a1006]/50 mx-auto my-3"></div>
+            <p class="font-cormorant italic text-xl sm:text-2xl text-[#291909]">
+                Egy különleges pillanat...
+            </p>
+        </div>
+    </div>
+
+    <!-- Toast értesítő (alert helyett) -->
+    <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-5 py-2.5 rounded-full bg-[#1c130b]/95 border border-amber-400/50 text-amber-200 text-xs sm:text-sm font-medium shadow-2xl opacity-0 pointer-events-none transition-all duration-300 backdrop-blur-md">
+        Változtatások elmentve ✨
+    </div>
+
+    <!-- =====================================================================
+         1. NÉZET: MEGNYITÓ LAP (HERO / SPLASH KÉPERNYŐ)
+         ===================================================================== -->
+    <section id="splash-view" class="fixed inset-0 z-20 flex flex-col items-center justify-center bg-[#090604] transition-all duration-700 cursor-pointer select-none">
+        
+        <!-- Finom arany háttér aura -->
+        <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(212,175,55,0.14)_0%,rgba(11,7,5,0.96)_70%)] pointer-events-none"></div>
+
+        <!-- Megnyitó kép keretezése -->
+        <div class="relative w-full h-full sm:w-[440px] sm:h-[92vh] sm:max-h-[840px] sm:rounded-3xl overflow-hidden sm:border sm:border-amber-400/30 shadow-[0_0_70px_rgba(0,0,0,0.95)] flex flex-col justify-between">
+            
+            <!-- Feltöltött borítókép -->
+            <img id="hero-main-img"
+                 src="5BC76916-CE49-48CA-9973-C89C897F8989_2.jpeg"
+                 alt="AB 12.21. Arany monogram és vörös rózsa"
+                 onerror="handleImageFallback(this)"
+                 class="absolute inset-0 w-full h-full object-cover object-center hero-image-animate">
+
+            <!-- Fallback grafika, ha a képfájl nem érhető el -->
+            <div id="hero-fallback" class="hidden absolute inset-0 w-full h-full bg-gradient-to-b from-[#140d07] via-[#0c0704] to-[#1a090d] flex-col items-center justify-center p-8 text-center">
+                <div class="text-amber-300/80 text-3xl mb-4">♡</div>
+                <div class="font-cinzel text-7xl font-bold text-gold-gradient tracking-wider">AB</div>
+                <div class="flex items-center gap-3 my-4">
+                    <span class="h-[1px] w-10 bg-amber-400/50"></span>
+                    <span class="font-cinzel text-2xl tracking-[0.25em] text-amber-200">12.21.</span>
+                    <span class="h-[1px] w-10 bg-amber-400/50"></span>
+                </div>
+                <p class="font-cormorant italic text-rose-300/80 text-lg mt-4">Örökké összefonódva</p>
+            </div>
+
+            <!-- Finom alsó sötétítő átmenet a gomb olvashatóságáért -->
+            <div class="absolute inset-x-0 bottom-0 h-44 bg-gradient-to-t from-black/90 via-black/50 to-transparent pointer-events-none"></div>
+
+            <!-- Felső diszkrét keretfény -->
+            <div class="relative z-10 pt-5 px-6 flex justify-center pointer-events-none">
+                <span class="text-[10px] uppercase tracking-[0.35em] text-amber-200/65 font-medium">
+                    Érintsd meg a megnyitáshoz
+                </span>
+            </div>
+
+            <!-- Alsó interaktív gomb és hívójel -->
+            <div class="relative z-10 pb-9 sm:pb-8 px-6 flex flex-col items-center text-center">
+                <button id="open-surprise-btn" type="button"
+                        class="btn-gold-shimmer px-8 py-3.5 rounded-full font-cinzel font-semibold text-sm sm:text-base tracking-[0.14em] uppercase flex items-center gap-2.5 cursor-pointer">
+                    <span>Tovább a meglepetéshez</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+                    </svg>
+                </button>
+
+                <div class="mt-3 flex items-center gap-1.5 text-amber-200/75 text-xs font-cormorant italic tracking-wide float-cue">
+                    <span>Kattints bárhová a folytatáshoz</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =====================================================================
+         2. NÉZET: MÁSODIK OLDAL (3 ELEMŰ LUXUS KÁRTYALISTA + SZERKESZTÉS)
+         ===================================================================== -->
+    <main id="content-view" class="hidden min-h-screen relative z-10 pb-20">
+        
+        <!-- Háttér hangulatfények (meleg arany és mély vörös tónusok) -->
+        <div class="fixed inset-0 pointer-events-none overflow-hidden -z-10">
+            <div class="absolute -top-32 left-1/2 -translate-x-1/2 w-[550px] h-[550px] rounded-full bg-amber-600/10 blur-[120px]"></div>
+            <div class="absolute bottom-0 right-0 w-[420px] h-[420px] rounded-full bg-rose-950/35 blur-[110px]"></div>
+            <div class="absolute top-1/2 -left-24 w-[350px] h-[350px] rounded-full bg-amber-700/10 blur-[100px]"></div>
+        </div>
+
+        <!-- Felső navigációs sáv -->
+        <header class="sticky top-0 z-30 backdrop-blur-md bg-[#0b0705]/80 border-b border-amber-500/15">
+            <div class="max-w-2xl mx-auto px-4 h-16 flex items-center justify-between">
+                <!-- Vissza a megnyitó képre gomb -->
+                <button id="back-to-splash-btn" type="button"
+                        class="flex items-center gap-2 text-amber-200/80 hover:text-amber-200 text-xs sm:text-sm font-medium py-2 px-3 rounded-full border border-amber-500/20 hover:border-amber-400/50 bg-amber-950/20 transition cursor-pointer">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+                    </svg>
+                    <span>Borító</span>
+                </button>
+
+                <!-- Középső mini monogram -->
+                <div class="flex items-center gap-2">
+                    <span class="font-cinzel font-bold text-base tracking-[0.2em] text-gold-gradient">AB</span>
+                    <span class="text-amber-500/50 text-xs">•</span>
+                    <span class="font-cinzel text-xs tracking-[0.2em] text-amber-200/80">12.21.</span>
+                </div>
+
+                <!-- Szerkesztés mód kapcsoló -->
+                <button id="toggle-edit-btn" type="button"
+                        class="flex items-center gap-1.5 text-amber-200/80 hover:text-amber-100 text-xs sm:text-sm font-medium py-2 px-3.5 rounded-full border border-amber-500/25 hover:border-amber-400/60 bg-amber-900/20 transition cursor-pointer">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                    </svg>
+                    <span id="edit-btn-label">Szerkesztés</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Tartalom konténer -->
+        <div class="max-w-2xl mx-auto px-4 sm:px-6 pt-8 sm:pt-12">
+            
+            <!-- Fejléc / Főcím szekció -->
+            <div class="text-center mb-10">
+                <!-- Díszítő szív és arany vonal -->
+                <div class="flex items-center justify-center gap-3 mb-3">
+                    <span class="h-[1px] w-12 bg-gradient-to-r from-transparent to-amber-400/60"></span>
+                    <svg class="w-5 h-5 text-amber-400" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                    </svg>
+                    <span class="h-[1px] w-12 bg-gradient-to-l from-transparent to-amber-400/60"></span>
+                </div>
+
+                <!-- Megjelenített címek (Olvasó mód) -->
+                <div id="header-display">
+                    <p id="display-subtitle" class="font-cormorant italic text-lg sm:text-xl text-rose-300/90 mb-1">
+                        AB • 12.21. • Különleges meglepetés
+                    </p>
+                    <h1 id="display-main-title" class="font-cinzel text-2xl sm:text-4xl font-bold text-gold-gradient tracking-wide leading-snug">
+                        Válassz egyet az alábbi három meglepetés közül
+                    </h1>
+                    <p id="display-intro" class="text-xs sm:text-sm text-amber-100/65 max-w-md mx-auto mt-3 leading-relaxed">
+                        Koppints a kártyákra a részletekért, majd válaszd ki a neked legkedvesebbet
+                    </p>
+                </div>
+
+                <!-- Kiválasztás megerősítő sáv (ha már választott) -->
+                <div id="selection-banner" class="hidden mt-6 p-4 rounded-2xl bg-gradient-to-r from-amber-500/15 via-amber-400/20 to-rose-900/20 border border-amber-400/50 text-center shadow-lg backdrop-blur-md transition-all">
+                    <span class="text-xs uppercase tracking-[0.2em] text-amber-300/80 block mb-1">Kiválasztott meglepetés</span>
+                    <p id="selection-banner-text" class="font-cinzel text-base sm:text-lg font-bold text-gold-gradient"></p>
+                </div>
+
+                <!-- Szerkeszthető címek (Szerkesztő mód) -->
+                <div id="header-editor" class="hidden space-y-3 bg-[#160f09]/90 p-5 rounded-2xl border border-amber-400/40 text-left mt-2">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-semibold uppercase tracking-wider text-amber-400">Oldal címeinek szerkesztése</span>
+                        <button type="button" id="reset-defaults-btn" class="text-xs text-rose-300 hover:text-rose-200 underline cursor-pointer">
+                            Alapértelmezett szövegek
+                        </button>
+                    </div>
+                    <div>
+                        <label class="block text-[11px] text-amber-200/70 mb-1">Alcím / Dátum szöveg</label>
+                        <input type="text" id="input-subtitle" class="w-full bg-black/50 border border-amber-500/30 rounded-xl px-3.5 py-2 text-sm text-amber-100 focus:border-amber-400 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] text-amber-200/70 mb-1">Főcím</label>
+                        <input type="text" id="input-main-title" class="w-full bg-black/50 border border-amber-500/30 rounded-xl px-3.5 py-2 text-sm text-amber-100 focus:border-amber-400 outline-none">
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3 Elemből álló interaktív választási kártyalista -->
+            <div id="cards-container" class="space-y-4">
+                <!-- JavaScript tölti fel a 3 kártyát -->
+            </div>
+
+            <!-- Szerkesztő mód mentés gombja alul -->
+            <div id="editor-footer-actions" class="hidden mt-8 flex flex-col sm:flex-row gap-3 justify-center">
+                <button id="save-edits-btn" type="button"
+                        class="btn-gold-shimmer px-8 py-3.5 rounded-full font-cinzel font-semibold text-sm tracking-widest uppercase cursor-pointer">
+                    Változtatások mentése
+                </button>
+            </div>
+
+            <!-- Alsó romantikus aláírás / záró díszítés -->
+            <footer class="mt-14 text-center">
+                <div class="inline-flex flex-col items-center">
+                    <!-- Összefonódó dupla szív SVG -->
+                    <svg class="w-12 h-8 text-amber-400/80 mb-2" viewBox="0 0 64 40" fill="none" stroke="currentColor" stroke-width="1.8">
+                        <path d="M22 34C22 34 6 23.5 6 13.5C6 8.5 10 5 14.5 5C17.5 5 20.5 6.8 22 9.5C23.5 6.8 26.5 5 29.5 5C34 5 38 8.5 38 13.5C38 23.5 22 34 22 34Z"/>
+                        <path d="M42 36C42 36 28 26.8 28 18C28 13.6 31.5 10.5 35.5 10.5C38.1 10.5 40.7 12.1 42 14.5C43.3 12.1 45.9 10.5 48.5 10.5C52.5 10.5 56 13.6 56 18C56 26.8 42 36 42 36Z" stroke="#f5d38c"/>
+                    </svg>
+                    <span class="font-cinzel text-sm tracking-[0.3em] text-amber-200/70">AB • 12.21.</span>
+                    <span class="font-cormorant italic text-sm text-rose-300/70 mt-1">Szeretettel, csak Neked</span>
+                </div>
+            </footer>
+        </div>
+    </main>
+
+    <script>
+        /**
+         * Alapértelmezett 3 elemű választható meglepetéslista adatai (localStorage-ba menthető és szerkeszthető)
+         */
+        const DEFAULT_DATA = {
+            subtitle: "AB • 12.21. • Különleges meglepetés",
+            mainTitle: "Válassz egyet az alábbi három meglepetés közül",
+            selectedIndex: null,
+            items: [
+                {
+                    number: "01",
+                    title: "Romantikus vacsora",
+                    summary: "Gyertyafényes este kettesben",
+                    detail: "Egy meghitt, különleges este csak rólunk szólva – finom ételek, halk zene, gyertyafény és zavartalan beszélgetés a kedvenc helyeden vagy egy új, varázslatos étteremben."
+                },
+                {
+                    number: "02",
+                    title: "Egy utazás",
+                    summary: "Közös kikapcsolódás és új élmények",
+                    detail: "Kiszakadunk a hétköznapokból egy közös kiruccanásra – legyen az egy romantikus hétvége, wellness pihenés vagy egy új város felfedezése kéz a kézben."
+                },
+                {
+                    number: "03",
+                    title: "Bármit kívánhatsz",
+                    summary: "Egy különleges kívánság, ami valóra válik",
+                    detail: "Ez a kártya a Te szabadkártyád: bármi is legyen az a titkos vágyad, programod vagy meglepetésed, amit régóta szeretnél, most teljesül!"
+                }
+            ]
+        };
+
+        const STORAGE_KEY = 'ab_1221_surprise_choices_v1';
+        let appData = loadAppData();
+        let isEditMode = false;
+        let expandedIndex = 0; // Az első kártya alapból nyitva van
+
+        /**
+         * Adatok betöltése localStorage-ból
+         */
+        function loadAppData() {
+            try {
+                const saved = localStorage.getItem(STORAGE_KEY);
+                if (saved) {
+                    const parsed = JSON.parse(saved);
+                    if (parsed && Array.isArray(parsed.items) && parsed.items.length === 3) {
+                        return parsed;
+                    }
+                }
+            } catch (e) {
+                console.warn('Nem sikerült betölteni a mentett adatokat:', e);
+            }
+            return JSON.parse(JSON.stringify(DEFAULT_DATA));
+        }
+
+        /**
+         * Adatok mentése localStorage-ba
+         */
+        function saveAppData() {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
+            } catch (e) {
+                console.warn('Mentési hiba:', e);
+            }
+        }
+
+        /**
+         * Kép betöltési hiba kezelése (Fallback)
+         */
+        function handleImageFallback(imgEl) {
+            imgEl.style.display = 'none';
+            const fallback = document.getElementById('hero-fallback');
+            if (fallback) {
+                fallback.classList.remove('hidden');
+                fallback.classList.add('flex');
+            }
+        }
+
+        /**
+         * Toast üzenet megjelenítése
+         */
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.classList.remove('opacity-0', 'translate-y-2');
+            toast.classList.add('opacity-100', 'translate-y-0');
+
+            clearTimeout(window._toastTimer);
+            window._toastTimer = setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-2');
+                toast.classList.remove('opacity-100', 'translate-y-0');
+            }, 2600);
+        }
+
+        /**
+         * Kártyák kirajzolása (Olvasó vagy Szerkesztő módban)
+         */
+        function renderContent() {
+            // Fejléc szövegek frissítése
+            document.getElementById('display-subtitle').textContent = appData.subtitle;
+            document.getElementById('display-main-title').textContent = appData.mainTitle;
+            document.getElementById('input-subtitle').value = appData.subtitle;
+            document.getElementById('input-main-title').value = appData.mainTitle;
+
+            // Kiválasztási banner frissítése
+            const selectionBanner = document.getElementById('selection-banner');
+            const selectionBannerText = document.getElementById('selection-banner-text');
+            if (!isEditMode && appData.selectedIndex !== null && appData.items[appData.selectedIndex]) {
+                selectionBanner.classList.remove('hidden');
+                selectionBannerText.textContent = `A választásod: ${appData.items[appData.selectedIndex].title} ✨`;
+            } else {
+                selectionBanner.classList.add('hidden');
+            }
+
+            const headerDisplay = document.getElementById('header-display');
+            const headerEditor = document.getElementById('header-editor');
+            const editorFooter = document.getElementById('editor-footer-actions');
+            const editBtnLabel = document.getElementById('edit-btn-label');
+
+            if (isEditMode) {
+                headerDisplay.classList.add('hidden');
+                headerEditor.classList.remove('hidden');
+                editorFooter.classList.remove('hidden');
+                editBtnLabel.textContent = 'Kész';
+            } else {
+                headerDisplay.classList.remove('hidden');
+                headerEditor.classList.add('hidden');
+                editorFooter.classList.add('hidden');
+                editBtnLabel.textContent = 'Szerkesztés';
+            }
+
+            const container = document.getElementById('cards-container');
+            container.innerHTML = '';
+
+            appData.items.forEach((item, idx) => {
+                const isExpanded = isEditMode || expandedIndex === idx;
+                const isSelected = appData.selectedIndex === idx;
+                const card = document.createElement('article');
+                card.className = `list-card revealed rounded-2xl bg-gradient-to-br from-[#18100a]/90 via-[#120b07]/95 to-[#1d0b10]/90 gold-border-glow transition-all duration-300 ${isExpanded || isSelected ? 'expanded gold-card-active' : ''} ${isSelected ? 'ring-2 ring-amber-400/70' : ''}`;
+
+                if (!isEditMode) {
+                    // OLVASÓ ÉS VÁLASZTÓ MÓD KÁRTYA
+                    card.innerHTML = `
+                        <button type="button" class="w-full text-left p-5 sm:p-6 flex items-start gap-4 cursor-pointer focus:outline-none" onclick="toggleCard(${idx})">
+                            <!-- Arany sorszám jelvény -->
+                            <div class="shrink-0 w-11 h-11 rounded-xl bg-gradient-to-br ${isSelected ? 'from-amber-400/40 to-amber-700/40 border-amber-300' : 'from-amber-500/20 to-amber-900/20 border-amber-400/40'} border flex items-center justify-center shadow-inner">
+                                <span class="font-cinzel font-bold text-base text-gold-gradient">${isSelected ? '✓' : item.number}</span>
+                            </div>
+
+                            <!-- Cím és rövid előnézet -->
+                            <div class="flex-grow min-w-0">
+                                <div class="flex items-center gap-2 flex-wrap">
+                                    <h2 class="font-cinzel text-base sm:text-lg font-semibold text-amber-100 leading-snug">
+                                        ${escapeHTML(item.title)}
+                                    </h2>
+                                    ${isSelected ? '<span class="text-[10px] uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-amber-400/20 border border-amber-300/50 text-amber-200 font-semibold">Kiválasztva</span>' : ''}
+                                </div>
+                                <p class="font-cormorant italic text-base sm:text-lg text-amber-200/70 mt-0.5 line-clamp-1">
+                                    ${escapeHTML(item.summary)}
+                                </p>
+                            </div>
+
+                            <!-- Nyitó/záró ikon -->
+                            <div class="shrink-0 mt-1 text-amber-400/80 transition-transform duration-300 ${isExpanded ? 'rotate-180 text-amber-300' : ''}">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </div>
+                        </button>
+
+                        <!-- Kinyíló részletes üzenet és kiválasztó gomb -->
+                        <div class="card-details">
+                            <div class="card-details-inner">
+                                <div class="px-5 sm:px-6 pb-6 pt-1 pl-[4.5rem] sm:pl-[5rem]">
+                                    <div class="h-[1px] w-full bg-gradient-to-r from-amber-500/30 via-rose-500/20 to-transparent mb-3.5"></div>
+                                    <p class="text-sm sm:text-[15px] text-amber-50/85 leading-relaxed font-light">
+                                        ${escapeHTML(item.detail)}
+                                    </p>
+                                    <div class="mt-4 flex flex-wrap items-center justify-between gap-3">
+                                        <button type="button" onclick="selectChoice(${idx})"
+                                                class="${isSelected ? 'bg-amber-400/20 text-amber-200 border border-amber-300/60' : 'btn-gold-shimmer'} px-5 py-2.5 rounded-full font-cinzel font-semibold text-xs tracking-[0.14em] uppercase flex items-center gap-2 cursor-pointer">
+                                            <span>${isSelected ? '✓ Ezt választottad' : 'Ezt választom'}</span>
+                                        </button>
+                                        <span class="text-rose-400/80 text-xs font-cormorant italic">♥ AB • 12.21.</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    // SZERKESZTŐ MÓD KÁRTYA
+                    card.innerHTML = `
+                        <div class="p-5 sm:p-6 space-y-3">
+                            <div class="flex items-center gap-2.5">
+                                <span class="font-cinzel font-bold text-sm text-amber-400 bg-amber-500/10 border border-amber-400/30 px-2.5 py-1 rounded-lg">
+                                    #${item.number}
+                                </span>
+                                <span class="text-xs text-amber-200/60">Kártya szerkesztése</span>
+                            </div>
+                            <div>
+                                <label class="block text-[11px] text-amber-200/70 mb-1">Pont címe</label>
+                                <input type="text" data-idx="${idx}" data-field="title" value="${escapeAttr(item.title)}"
+                                       class="edit-field w-full bg-black/50 border border-amber-500/30 rounded-xl px-3.5 py-2 text-sm text-amber-100 focus:border-amber-400 outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] text-amber-200/70 mb-1">Rövid alcím / bevezető</label>
+                                <input type="text" data-idx="${idx}" data-field="summary" value="${escapeAttr(item.summary)}"
+                                       class="edit-field w-full bg-black/50 border border-amber-500/30 rounded-xl px-3.5 py-2 text-sm text-amber-100 focus:border-amber-400 outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] text-amber-200/70 mb-1">Részletes üzenet (kattintásra nyílik meg)</label>
+                                <textarea rows="3" data-idx="${idx}" data-field="detail"
+                                          class="edit-field w-full bg-black/50 border border-amber-500/30 rounded-xl px-3.5 py-2 text-sm text-amber-100 focus:border-amber-400 outline-none resize-y">${escapeHTML(item.detail)}</textarea>
+                            </div>
+                        </div>
+                    `;
+                }
+
+                container.appendChild(card);
+            });
+
+            // Élő input figyelés szerkesztő módban
+            if (isEditMode) {
+                document.querySelectorAll('.edit-field').forEach(el => {
+                    el.addEventListener('input', (e) => {
+                        const i = parseInt(e.target.getAttribute('data-idx'), 10);
+                        const field = e.target.getAttribute('data-field');
+                        appData.items[i][field] = e.target.value;
+                    });
+                });
+            }
+        }
+
+        /**
+         * Kártya kinyitása / összecsukása és arany szikra effekt indítása
+         */
+        function toggleCard(index) {
+            if (isEditMode) return;
+            expandedIndex = (expandedIndex === index) ? -1 : index;
+            renderContent();
+            burstParticles(14);
+        }
+
+        /**
+         * Meglepetés kiválasztása ünnepi effekttel és mentéssel
+         */
+        function selectChoice(index) {
+            if (isEditMode) return;
+            appData.selectedIndex = index;
+            expandedIndex = index;
+            saveAppData();
+            renderContent();
+            burstParticles(42);
+            showToast(`A választásod: ${appData.items[index].title} ✨`);
+        }
+
+        /**
+         * HTML escape segédfüggvények
+         */
+        function escapeHTML(str) {
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;');
+        }
+
+        function escapeAttr(str) {
+            return String(str).replace(/"/g, '&quot;');
+        }
+
+        /**
+         * Látványos animált átmenet a megnyitó lapról a 2. oldalra
+         */
+        function transitionToContent() {
+            const splash = document.getElementById('splash-view');
+            const content = document.getElementById('content-view');
+            const overlay = document.getElementById('transition-overlay');
+
+            // 1. Arany szikrák felrobbantása
+            burstParticles(45);
+
+            // 2. Arany fényfüggöny beúsztatása
+            overlay.classList.add('active');
+
+            // 3. Félúton nézetváltás és kártyák egymás utáni becsúsztatása
+            setTimeout(() => {
+                splash.classList.add('hidden');
+                content.classList.remove('hidden');
+                window.scrollTo({ top: 0, behavior: 'instant' });
+
+                renderContent();
+
+                // Kártyák animált belépése (staggered animation)
+                const cards = document.querySelectorAll('#cards-container .list-card');
+                cards.forEach((c, idx) => {
+                    c.classList.remove('revealed');
+                    setTimeout(() => {
+                        c.classList.add('revealed');
+                    }, 140 + idx * 130);
+                });
+            }, 520);
+
+            // 4. Arany fényfüggöny elhalványítása
+            setTimeout(() => {
+                overlay.classList.remove('active');
+            }, 950);
+        }
+
+        /**
+         * Vissza a megnyitó lapra (hogy újra meg lehessen nézni az animációt)
+         */
+        function transitionToSplash() {
+            const splash = document.getElementById('splash-view');
+            const content = document.getElementById('content-view');
+            const overlay = document.getElementById('transition-overlay');
+
+            overlay.classList.add('active');
+
+            setTimeout(() => {
+                content.classList.add('hidden');
+                splash.classList.remove('hidden');
+            }, 480);
+
+            setTimeout(() => {
+                overlay.classList.remove('active');
+            }, 850);
+        }
+
+        /**
+         * Lebegő arany részecskék és finom rózsaszirmok (Canvas animáció)
+         */
+        const canvas = document.getElementById('ambient-canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        class Particle {
+            constructor(isBurst = false) {
+                this.reset(isBurst);
+            }
+
+            reset(isBurst = false) {
+                this.isPetal = Math.random() < 0.22; // 22% eséllyel finom vörös szirom, 78% arany fény/szikra
+                if (isBurst) {
+                    this.x = canvas.width / 2 + (Math.random() - 0.5) * 140;
+                    this.y = canvas.height / 2 + (Math.random() - 0.5) * 140;
+                    this.vx = (Math.random() - 0.5) * 7;
+                    this.vy = (Math.random() - 0.5) * 7 - 1.5;
+                    this.life = 1;
+                    this.decay = 0.015 + Math.random() * 0.015;
+                } else {
+                    this.x = Math.random() * canvas.width;
+                    this.y = Math.random() * canvas.height;
+                    this.vx = (Math.random() - 0.5) * 0.45;
+                    this.vy = this.isPetal ? (0.35 + Math.random() * 0.55) : (-0.2 - Math.random() * 0.4);
+                    this.life = 1;
+                    this.decay = 0;
+                }
+                this.isBurst = isBurst;
+                this.size = this.isPetal ? (4 + Math.random() * 5) : (1.5 + Math.random() * 3.5);
+                this.alpha = 0.25 + Math.random() * 0.55;
+                this.angle = Math.random() * Math.PI * 2;
+                this.spin = (Math.random() - 0.5) * 0.03;
+            }
+
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                this.angle += this.spin;
+
+                if (this.isBurst) {
+                    this.life -= this.decay;
+                } else {
+                    if (this.y < -20 || this.y > canvas.height + 20 || this.x < -20 || this.x > canvas.width + 20) {
+                        this.reset(false);
+                        if (!this.isPetal) this.y = canvas.height + 10;
+                    }
+                }
+            }
+
+            draw() {
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.rotate(this.angle);
+                const currentAlpha = this.isBurst ? Math.max(0, this.life * this.alpha) : this.alpha;
+
+                if (this.isPetal) {
+                    // Finom vörös rózsaszirom forma
+                    ctx.beginPath();
+                    ctx.moveTo(0, -this.size);
+                    ctx.quadraticCurveTo(this.size, 0, 0, this.size);
+                    ctx.quadraticCurveTo(-this.size, 0, 0, -this.size);
+                    ctx.fillStyle = `rgba(190, 24, 93, ${currentAlpha * 0.7})`;
+                    ctx.fill();
+                } else {
+                    // Arany csillogó por / bokeh
+                    const grad = ctx.createRadialGradient(0, 0, 0, 0, 0, this.size * 1.6);
+                    grad.addColorStop(0, `rgba(254, 240, 138, ${currentAlpha})`);
+                    grad.addColorStop(0.5, `rgba(212, 175, 55, ${currentAlpha * 0.5})`);
+                    grad.addColorStop(1, 'rgba(212, 175, 55, 0)');
+                    ctx.fillStyle = grad;
+                    ctx.beginPath();
+                    ctx.arc(0, 0, this.size * 1.6, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+                ctx.restore();
+            }
+        }
+
+        function initParticles() {
+            resizeCanvas();
+            particles = [];
+            const count = window.innerWidth < 640 ? 28 : 48;
+            for (let i = 0; i < count; i++) {
+                particles.push(new Particle(false));
+            }
+        }
+
+        function burstParticles(amount = 30) {
+            for (let i = 0; i < amount; i++) {
+                particles.push(new Particle(true));
+            }
+        }
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let i = particles.length - 1; i >= 0; i--) {
+                const p = particles[i];
+                p.update();
+                p.draw();
+                if (p.isBurst && p.life <= 0) {
+                    particles.splice(i, 1);
+                }
+            }
+            requestAnimationFrame(animateParticles);
+        }
+
+        /**
+         * Eseménykezelők inicializálása
+         */
+        window.addEventListener('DOMContentLoaded', () => {
+            initParticles();
+            animateParticles();
+
+            // Megnyitó lap kattintás / gombnyomás
+            const splashView = document.getElementById('splash-view');
+            const openBtn = document.getElementById('open-surprise-btn');
+
+            splashView.addEventListener('click', (e) => {
+                e.preventDefault();
+                transitionToContent();
+            });
+
+            openBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                transitionToContent();
+            });
+
+            // Vissza gomb
+            document.getElementById('back-to-splash-btn').addEventListener('click', transitionToSplash);
+
+            // Szerkesztés mód váltása
+            document.getElementById('toggle-edit-btn').addEventListener('click', () => {
+                if (isEditMode) {
+                    // Mentés kilépéskor
+                    appData.subtitle = document.getElementById('input-subtitle').value.trim() || DEFAULT_DATA.subtitle;
+                    appData.mainTitle = document.getElementById('input-main-title').value.trim() || DEFAULT_DATA.mainTitle;
+                    saveAppData();
+                    showToast('Változtatások elmentve ✨');
+                }
+                isEditMode = !isEditMode;
+                renderContent();
+            });
+
+            // Mentés gomb alul
+            document.getElementById('save-edits-btn').addEventListener('click', () => {
+                appData.subtitle = document.getElementById('input-subtitle').value.trim() || DEFAULT_DATA.subtitle;
+                appData.mainTitle = document.getElementById('input-main-title').value.trim() || DEFAULT_DATA.mainTitle;
+                saveAppData();
+                isEditMode = false;
+                renderContent();
+                burstParticles(25);
+                showToast('Szövegek sikeresen mentve ✨');
+            });
+
+            // Alapértelmezett szövegek visszaállítása
+            document.getElementById('reset-defaults-btn').addEventListener('click', () => {
+                appData = JSON.parse(JSON.stringify(DEFAULT_DATA));
+                saveAppData();
+                renderContent();
+                showToast('Alapértelmezett szövegek visszaállítva');
+            });
+        });
+
+        window.addEventListener('resize', resizeCanvas);
+    </script>
+</body>
+</html>
